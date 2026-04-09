@@ -1,41 +1,116 @@
-# Wireframes (Textual)
+# GolDefi Wireframes (Textual)
 
-## Screen Inventory (MVP)
-1. Project Dashboard
-2. Artifact Editor
-3. Artifact Readiness Checklist
-4. Open Questions Board
-5. Review & Approval Panel
-6. API Contract Viewer
-7. Acceptance Matrix Editor
-8. Test Strategy Workspace
+## Screen Inventory
 
-## Screen 1: Project Dashboard
-- Header: project name, status badge, last updated.
-- Left nav: Product, Architecture, Flows, Design, API, QA, Questions.
-- Main: readiness progress bars by artifact.
-- Right rail: blockers, pending approvals, recent changes.
+### MVP Screens
+1. Public Landing + Signup
+2. Email OTP Verification
+3. Login + MFA
+4. User Dashboard
+5. KYC Status + KYC Start
+6. Buy GDI (multi-method payment)
+7. Orders & Transaction History
+8. Redemption Request + Tracking
+9. Profile & Wallet Management
+10. Distributor Search/OTP/Payment Registration
+11. Auditor Audit Submission
+12. Admin Policy & Configuration Console
 
-## Screen 2: Artifact Editor
-- Top: artifact title, owner, status, save/review buttons.
-- Body: structured sections with validation hints.
-- Side panel: linked artifacts and unresolved dependencies.
+### Later-Phase Screens
+1. Multi-vault routing configuration
+2. Risk analytics dashboard
+3. Provider SLA/health cockpit
 
-## Screen 3: Readiness Checklist
-- Checklist rows per required artifact.
-- Columns: completeness, consistency, reviewer state.
-- Actions: open artifact, request clarification, mark ready.
+---
 
-## Screen 4: Open Questions Board
-- Table columns: ID, question, owner, priority, status, due date.
-- Filters: domain, status, artifact impact.
-- Actions: create, assign, resolve, link to artifact.
+## Wireframe WF-01 — User Dashboard
+```text
++--------------------------------------------------------------------------------+
+| GolDefi | Dashboard | Buy | Redeem | Orders | Profile | Notifications          |
++------------------------+------------------------------------------+-------------+
+| Portfolio Snapshot     | Holdings: 12,540 GDI                    | KYC: Approved|
+| Equivalent Gold Weight | Mint/Burn Activity Feed                 | Wallet: Linked|
+| Current Status Cards   | Recent Orders (Pending/Minted/Redeemed) | Alerts       |
++------------------------+------------------------------------------+-------------+
+```
 
-## Screen 5: Review & Approval Panel
-- Diff view between revisions.
-- Comment threads by section.
-- Decision controls: approve, request changes, escalate.
+## Wireframe WF-02 — Buy GDI
+```text
++--------------------------------------------------------------------------------+
+| Buy GDI Tokens                                                                 |
++--------------------------------------------------------------------------------+
+| Token Amount [________]  Gold Eq. [auto]  Fee [auto]  Total [auto]            |
+| Payment Method: ( ) Crypto  ( ) Card  ( ) Bank  ( ) Cash                      |
+| If Cash selected: distributor guidance + order handling steps                  |
+| [Get Quote]                                                     [Confirm Order]|
++--------------------------------------------------------------------------------+
+```
 
-## Later-Phase Screens
-- Task-package generator wizard.
-- Integration settings and webhook monitor.
+## Wireframe WF-03 — Redemption
+```text
++--------------------------------------------------------------------------------+
+| Redeem GDI                                                                      |
++--------------------------------------------------------------------------------+
+| Redeem Amount [________]  Eligible? [auto-check]  Min Threshold [value]        |
+| Delivery Address [stored/verified] [Edit -> requires verification if changed]  |
+| Steps: Validate -> Lock -> Burn -> Fulfillment                                 |
+| [Submit Request]                                                  [Cancel]      |
++--------------------------------------------------------------------------------+
+```
+
+## Wireframe WF-04 — Distributor Cash Registration
+```text
++--------------------------------------------------------------------------------+
+| Distributor Console                                                             |
++--------------------------------------------------------------------------------+
+| Order ID [________]   User Email [__________________]  [Search]                |
+| OTP [______] [Validate OTP]                                                     |
+| Cash Received [amount]   Signature [Capture]                                    |
+| Status: Awaiting OTP / Verified / Rejected                                      |
+| [Register Payment]                                               [Reset]        |
++--------------------------------------------------------------------------------+
+```
+
+## Wireframe WF-05 — Auditor Submission
+```text
++--------------------------------------------------------------------------------+
+| Audit Request #A-204                                                            |
++--------------------------------------------------------------------------------+
+| Vault Name [____]  Audit Date [____]  Auditor [auto]                            |
+| Findings [text area]                                                            |
+| Documents [Upload]  Metadata [auto/manual]                                      |
+| Status: Draft / Pending / Audited / Exception                                   |
+| [Sign & Submit]                                                  [Save Draft]   |
++--------------------------------------------------------------------------------+
+```
+
+## Wireframe WF-06 — Admin Policy Console
+```text
++--------------------------------------------------------------------------------+
+| Admin > Compliance & Policy                                                     |
++--------------------------------------------------------------------------------+
+| Country Controls: [Blacklist] [Greylist + extra docs]                           |
+| Fee Rules: [Tier Config]                                                        |
+| Thresholds: [Purchase Min/Max] [Redemption Min/Max]                             |
+| Distributor Management: [Invite] [Deactivate]                                   |
+| [Save Draft]                                                   [Publish Policy] |
++--------------------------------------------------------------------------------+
+```
+
+---
+
+## Required Screen-State Matrix (MVP)
+| Screen | Required States |
+|---|---|
+| Signup + KYC | eligible, blacklisted blocked, greylist extra-docs required, KYC pending, KYC rejected |
+| Buy GDI | quote_success, payment_pending, payment_failed_retry, payment_confirmed_minting, minted |
+| Orders | submitted, payment_pending, paid, minted, failed, cancelled |
+| Redemption | requested, verified, locked, burned, fulfillment, completed, exception |
+| Distributor Console | awaiting_otp, otp_validated, otp_failed_lockout, distributor_suspended |
+| Audit Submission | draft, pending, document_missing, signature_invalid, audited, exception |
+| Admin Policy | draft_config, validation_error, publish_success |
+
+## Interaction/Copy Requirements for State Screens
+- Every blocked/failed state must show reason code and next action.
+- Irreversible actions (mint/burn/publish policy) require explicit confirmation text.
+- SLA-impacting delays (payment callback timeout, redemption delay) require proactive notification banners.

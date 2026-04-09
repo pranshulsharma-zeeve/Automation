@@ -1,47 +1,64 @@
-# Product Brief
+# GolDefi Product Brief
 
 ## Product Name
-Foundation Pack Orchestrator (working name)
+GolDefi — Blockchain-based Digital Gold Tokenization Platform
 
 ## Problem Statement
-Teams want to ship products with AI assistance, but implementation work often starts before requirements, design, and quality artifacts are coherent. This causes rework, misalignment, and low-confidence releases.
+Investors want exposure to physical gold with lower operational friction, fractional ownership, and transparent reserve integrity. Traditional flows are slow, opaque, and operationally heavy. GolDefi solves this by issuing gold-backed tokens with compliance gates and redeemability.
+
+## Product Vision
+Enable compliant users to purchase, hold, and redeem fractional gold through digital tokens where lifecycle events (mint, transfer, burn, redemption) are auditable and policy-controlled.
 
 ## Target Users
-1. Product managers defining scope and priorities.
-2. Engineering leads translating product intent into implementation plans.
-3. Designers maintaining UX and visual consistency.
-4. QA leads establishing acceptance criteria and test coverage.
-5. AI agents (Codex) generating structured outputs and implementation plans.
+1. **Retail/Professional Investors (Users):** buy and hold GDI tokens.
+2. **Distributors:** register verified cash payments for assisted purchase.
+3. **Auditors/Inspectors:** verify physical reserves and publish evidence.
+4. **Operations/Admin:** govern policies, limits, fees, and exceptions.
+5. **Compliance Team:** enforce KYC/AML and sanctions controls.
 
 ## Value Proposition
-A documentation-first delivery system that enforces a repeatable path from requirements to validated implementation.
+- Fractional gold ownership with digital settlement convenience.
+- Compliance-first operations with role-based control.
+- Physical reserve trust via audit workflows and evidence integrity.
+- Physical redemption path for token holders.
 
-## Primary Outcomes
-- Reduce requirement ambiguity before coding.
-- Ensure each implementation task is traceable to approved artifacts.
-- Increase release confidence through explicit acceptance and testing gates.
-- Improve cross-functional collaboration through shared source-of-truth docs.
+## Business Outcomes
+- Improve onboarding and conversion for compliant users.
+- Maintain strong reserve confidence through auditable operations.
+- Reduce payment-to-mint latency and operational exception handling time.
+- Create a scalable platform for multi-vault and additional payment rails in later phases.
 
 ## MVP Goals
-- Produce complete Foundation Pack artifacts from SRS.
-- Enforce MVP-vs-later-phase scope separation.
-- Define architecture, flows, API contracts, QA matrix, and test strategy.
-- Capture unresolved assumptions in a dedicated open-questions log.
+- Registration, email verification, login, and profile management.
+- KYC gating for purchase eligibility.
+- Wallet binding and update verification.
+- Purchase flow with supported payment methods.
+- Mint orchestration after validated payment.
+- Redemption workflow with lock -> burn -> fulfillment handoff.
+- Audit workflow with document metadata and immutable reference handling.
+- Admin policy controls (country lists, fees, thresholds, distributor management).
 
-## Non-Goals (MVP)
-- Building production application features.
-- Automating deployment pipelines.
-- Integrating with third-party PM systems.
+## Later-Phase Goals
+- Multi-vault routing and reserve optimization.
+- Advanced analytics and risk scoring.
+- Automated treasury/reconciliation and expanded integration coverage.
+- Mobile-native applications.
+
+## Non-Goals (Current Foundation Pack)
+- Secondary market exchange functionality.
+- On-platform distributor financial settlement automation.
+- Full hedging/treasury automation.
+- Global jurisdiction-specific legal automation.
+
+## Success Metrics (Initial Targets)
+- KYC completion >= 75% of initiated applicants.
+- Purchase conversion >= 60% of approved users.
+- Payment confirmation to mint p95 < 3 minutes.
+- Redemption initiation p95 < 15 minutes after approval checks.
+- Monthly uptime >= 99.9%.
 
 ## Ambiguities Identified
-- No concrete domain/problem details in the SRS.
-- No user persona prioritization.
-- No explicit platform target (web, mobile, CLI).
-- No data residency/compliance requirements.
-- No success metrics baseline.
-
-## Assumptions (to validate)
-- The first deliverable is a web-based internal product-delivery workspace.
-- Initial users are internal product/engineering/design/QA teams.
-- English-only interface for MVP.
-- Single-tenant workspace in MVP.
+- Final jurisdiction and compliance baseline per market.
+- Exact MVP payment-provider stack (card/bank vendors).
+- Whether meta-transactions are MVP or later-phase.
+- Operational ownership boundaries for exception approvals.
