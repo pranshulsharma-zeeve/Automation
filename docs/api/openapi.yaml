@@ -1,73 +1,206 @@
 openapi: 3.0.3
 info:
-  title: Foundation Pack API
+  title: GolDefi Platform API
   version: 1.0.0
-  description: API contracts for generating and managing Foundation Pack artifacts.
+  description: >-
+    Core API contracts for GolDefi onboarding, KYC gating, orders, payments,
+    tokenization, redemption, distributor workflows, and audit operations.
 servers:
-  - url: https://api.example.com
+  - url: https://api.goldefi.example.com/v1
+security:
+  - bearerAuth: []
 paths:
-  /projects:
+  /auth/register:
     post:
-      summary: Create project workspace
+      summary: Register a user account
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              dob: "1992-10-08"
+              country: "AE"
+              profession: "Engineer"
+              sector: "Technology"
+              annualRevenue: "50000-100000"
+              declarationAccepted: true
+              name: "Jane Doe"
+              email: "jane@example.com"
+              phone: "+971500000000"
+              password: "Str0ngPass!"
+      responses:
+        '201':
+          description: Registration initiated; email OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: Validation or policy failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/verify-email-otp:
+    post:
+      summary: Verify email OTP
+      tags: [Auth]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [name]
+              required: [email, otp]
               properties:
-                name:
+                email:
                   type: string
-                description:
+                  format: email
+                otp:
                   type: string
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
-  /projects/{projectId}/artifacts/{artifactType}:
-    put:
-      summary: Upsert artifact content
-      parameters:
-        - in: path
-          name: projectId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: artifactType
-          required: true
-          schema:
-            type: string
-            enum: [brief, priorities, scope, architecture, user_flows, process_flows, wireframes, branding, design_system, api_contract, acceptance_matrix, test_strategy]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ArtifactUpsertRequest'
       responses:
         '200':
-          description: Updated
+          description: Email verified
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Artifact'
-        '400':
-          description: Validation error
+                type: object
+                properties:
+                  verified:
+                    type: boolean
+                    example: true
+        '401':
+          description: Invalid OTP
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /projects/{projectId}/open-questions:
+  /kyc/status:
+    get:
+      summary: Retrieve KYC status for current user
+      tags: [KYC]
+      responses:
+        '200':
+          description: KYC status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KycStatusResponse'
+  /wallets/bind:
     post:
-      summary: Add unresolved question
+      summary: Bind wallet address after signature verification
+      tags: [Wallet]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletBindRequest'
+      responses:
+        '200':
+          description: Wallet bound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletBindResponse'
+  /orders/quote:
+    post:
+      summary: Get quote for token purchase
+      tags: [Orders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteRequest'
+            example:
+              gdiAmount: "1500"
+              paymentMethod: "CRYPTO_USDT"
+      responses:
+        '200':
+          description: Quote generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteResponse'
+  /orders:
+    post:
+      summary: Create purchase order
+      tags: [Orders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+  /orders/{orderId}:
+    get:
+      summary: Get order details by ID
+      tags: [Orders]
       parameters:
         - in: path
-          name: projectId
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /distributor/orders/lookup:
+    post:
+      summary: Lookup cash order by orderId and user email
+      tags: [Distributor]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, userEmail]
+              properties:
+                orderId:
+                  type: string
+                userEmail:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Order found and OTP triggered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  otpSent:
+                    type: boolean
+                    example: true
+  /distributor/orders/{orderId}/cash-payment:
+    post:
+      summary: Register cash payment with OTP and signature
+      tags: [Distributor]
+      parameters:
+        - in: path
+          name: orderId
           required: true
           schema:
             type: string
@@ -76,129 +209,275 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OpenQuestionRequest'
+              $ref: '#/components/schemas/CashPaymentRequest'
       responses:
-        '201':
-          description: Created
+        '200':
+          description: Cash payment recorded and mint initiated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OpenQuestion'
-  /projects/{projectId}/readiness:
-    get:
-      summary: Get foundation readiness status
+                type: object
+                properties:
+                  accepted:
+                    type: boolean
+                    example: true
+                  orderStatus:
+                    type: string
+                    example: PAYMENT_CONFIRMED
+  /redemptions:
+    post:
+      summary: Create redemption request
+      tags: [Redemption]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionRequest'
+      responses:
+        '201':
+          description: Redemption request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+  /audits:
+    post:
+      summary: Create audit request
+      tags: [Audit]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuditRequest'
+      responses:
+        '201':
+          description: Audit request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResponse'
+  /audits/{auditId}/submit:
+    post:
+      summary: Submit signed audit findings and documents
+      tags: [Audit]
       parameters:
         - in: path
-          name: projectId
+          name: auditId
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitAuditRequest'
       responses:
         '200':
-          description: Readiness summary
+          description: Audit submission accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadinessSummary'
+                $ref: '#/components/schemas/AuditResponse'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    Project:
+    RegisterRequest:
       type: object
-      required: [id, name, createdAt]
+      required: [dob, country, profession, sector, declarationAccepted, name, email, phone, password]
       properties:
-        id:
+        dob:
           type: string
-          example: proj_123
+          format: date
+        country:
+          type: string
+        profession:
+          type: string
+        sector:
+          type: string
+        annualRevenue:
+          type: string
+        declarationAccepted:
+          type: boolean
         name:
           type: string
-          example: Q3 Onboarding Revamp
-        description:
+        email:
           type: string
-          example: Documentation-first project setup
-        createdAt:
+          format: email
+        phone:
           type: string
-          format: date-time
-    ArtifactUpsertRequest:
+        password:
+          type: string
+          format: password
+    RegisterResponse:
       type: object
-      required: [content, updatedBy]
       properties:
-        content:
+        userId:
           type: string
-          example: "# Product Brief\n..."
-        updatedBy:
-          type: string
-          example: user_456
+          example: usr_7f9a
         status:
           type: string
-          enum: [draft, in_review, approved]
-    Artifact:
+          example: OTP_PENDING
+    KycStatusResponse:
       type: object
-      required: [artifactType, content, status, updatedAt]
       properties:
-        artifactType:
-          type: string
-          example: brief
-        content:
-          type: string
         status:
           type: string
-          enum: [draft, in_review, approved]
-        updatedAt:
+          enum: [NOT_STARTED, IN_PROGRESS, PENDING_REVIEW, APPROVED, REJECTED]
+        reasonCode:
           type: string
-          format: date-time
-    OpenQuestionRequest:
+          nullable: true
+          example: null
+    WalletBindRequest:
       type: object
-      required: [question, owner]
+      required: [walletAddress, challenge, signature]
       properties:
-        question:
+        walletAddress:
           type: string
-          example: What SSO provider is required?
-        owner:
+          example: "0x1234...abcd"
+        challenge:
           type: string
-          example: product_manager
-        impactedArtifacts:
-          type: array
-          items:
-            type: string
-    OpenQuestion:
+        signature:
+          type: string
+    WalletBindResponse:
       type: object
-      required: [id, question, owner, status]
       properties:
-        id:
+        walletAddress:
           type: string
-          example: oq_001
-        question:
-          type: string
-        owner:
-          type: string
-        status:
-          type: string
-          enum: [open, in_progress, resolved]
-    ReadinessSummary:
-      type: object
-      required: [projectId, readyForBacklog, missingArtifacts, blockingQuestions]
-      properties:
-        projectId:
-          type: string
-          example: proj_123
-        readyForBacklog:
+        verified:
           type: boolean
-          example: false
-        missingArtifacts:
+          example: true
+    QuoteRequest:
+      type: object
+      required: [gdiAmount, paymentMethod]
+      properties:
+        gdiAmount:
+          type: string
+          example: "1000"
+        paymentMethod:
+          type: string
+          enum: [CRYPTO_USDT, CARD, BANK, CASH]
+    QuoteResponse:
+      type: object
+      properties:
+        quoteId:
+          type: string
+          example: q_1202
+        gdiAmount:
+          type: string
+        platformFeeGdi:
+          type: string
+        totalPayable:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    CreateOrderRequest:
+      type: object
+      required: [quoteId, paymentMethod]
+      properties:
+        quoteId:
+          type: string
+        paymentMethod:
+          type: string
+          enum: [CRYPTO_USDT, CARD, BANK, CASH]
+    OrderResponse:
+      type: object
+      properties:
+        orderId:
+          type: string
+          example: ord_9321
+        status:
+          type: string
+          enum: [DRAFT, SUBMITTED, PAYMENT_PENDING, PAID, MINTED, FAILED, CANCELLED]
+        gdiAmount:
+          type: string
+        paymentMethod:
+          type: string
+        blockchainTxHash:
+          type: string
+          nullable: true
+    CashPaymentRequest:
+      type: object
+      required: [userOtp, amountReceived, distributorSignature]
+      properties:
+        userOtp:
+          type: string
+        amountReceived:
+          type: string
+        distributorSignature:
+          type: string
+    RedemptionRequest:
+      type: object
+      required: [gdiAmount, shippingAddressId]
+      properties:
+        gdiAmount:
+          type: string
+        shippingAddressId:
+          type: string
+    RedemptionResponse:
+      type: object
+      properties:
+        redemptionId:
+          type: string
+          example: red_332
+        status:
+          type: string
+          enum: [REQUESTED, VERIFIED, LOCKED, BURNED, FULFILLMENT, COMPLETED, FAILED]
+    CreateAuditRequest:
+      type: object
+      required: [vaultName, plannedDate]
+      properties:
+        vaultName:
+          type: string
+        plannedDate:
+          type: string
+          format: date
+    SubmitAuditRequest:
+      type: object
+      required: [status, findings, documentRefs, digitalSignature]
+      properties:
+        status:
+          type: string
+          enum: [AUDITED, EXCEPTION, CANCELLED]
+        findings:
+          type: string
+        documentRefs:
           type: array
           items:
-            type: string
-          example: ["test_strategy"]
-        blockingQuestions:
-          type: integer
-          example: 3
+            type: object
+            properties:
+              fileName:
+                type: string
+              hashRef:
+                type: string
+        digitalSignature:
+          type: string
+    AuditResponse:
+      type: object
+      properties:
+        auditId:
+          type: string
+          example: aud_902
+        status:
+          type: string
+          enum: [DRAFT, PENDING, DOCUMENTS_UPLOADED, AUDITED, EXCEPTION, CANCELLED, DONE]
     Error:
       type: object
       required: [code, message]
       properties:
         code:
           type: string
-          example: VALIDATION_ERROR
+          example: POLICY_BLOCKED
         message:
           type: string
-          example: Artifact content is missing required section: MVP goals.
+          example: User is not eligible to perform this action.
+        details:
+          type: object
+          additionalProperties: true
