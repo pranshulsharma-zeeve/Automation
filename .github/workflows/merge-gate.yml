@@ -1,0 +1,48 @@
+name: merge-gate
+
+# PURPOSE:
+# Enforce final merge requirements: validations pass, evidence complete, risk controls satisfied.
+# TRIGGER PLACEHOLDER:
+# - pull_request (labeled/unlabeled/synchronize), workflow_dispatch for manual gate checks
+# EXPECTED INPUTS:
+# - PR number, risk label, verification state, evidence report
+# EXPECTED OUTPUTS:
+# - gate_result (pass/fail), merge_readiness_report
+# CODEX INTEGRATION:
+# - Placeholder for Codex to confirm AGENTS.md gate compliance before merge.
+# STATUS LABELS TO APPLY:
+# - ai:ready-to-merge, ai:merged, ai:blocked
+# ARTIFACTS READ:
+# - PR validation outputs, task package, session status, AGENTS policy
+# ARTIFACTS WRITE:
+# - merge gate report artifact, PR status/comment
+
+on:
+  pull_request:
+    types: [labeled, unlabeled, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to evaluate"
+        required: false
+        type: string
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      gate_result: ${{ steps.out.outputs.gate_result }}
+      merge_readiness_report: ${{ steps.out.outputs.merge_readiness_report }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder - Evaluate merge gate
+        run: |
+          echo "TODO: verify tests, evidence summary, risk-level constraints"
+          echo "High risk must not auto-merge"
+
+      - name: Define placeholder outputs
+        id: out
+        run: |
+          echo "gate_result=pending" >> "$GITHUB_OUTPUT"
+          echo "merge_readiness_report=artifacts/merge-gate-report.md" >> "$GITHUB_OUTPUT"

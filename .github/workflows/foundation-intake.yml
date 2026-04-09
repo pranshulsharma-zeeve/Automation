@@ -1,0 +1,59 @@
+name: foundation-intake
+
+# PURPOSE:
+# Intake/normalize incoming product requests and initialize foundation session state.
+# TRIGGER PLACEHOLDER:
+# - workflow_dispatch (manual kickoff or future issue-label trigger)
+# EXPECTED INPUTS:
+# - request_id, source_issue, initiator, scope_hint
+# EXPECTED OUTPUTS:
+# - foundation_task_id, intake_summary_path
+# CODEX INTEGRATION:
+# - Placeholder step where Codex will synthesize initial brief/open-questions updates.
+# STATUS LABELS TO APPLY:
+# - ai:intake, ai:planning
+# ARTIFACTS READ:
+# - docs/product/srs.md (if present), docs/product/open-questions.md
+# ARTIFACTS WRITE:
+# - .ai/sessions/<task-id>/status.md, docs/product/brief.md (future automation)
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_id:
+        description: "Unique request identifier"
+        required: true
+        type: string
+      source_issue:
+        description: "GitHub issue number or link"
+        required: false
+        type: string
+      initiator:
+        description: "Who initiated intake"
+        required: true
+        type: string
+      scope_hint:
+        description: "Optional short scope hint"
+        required: false
+        type: string
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    outputs:
+      foundation_task_id: ${{ steps.out.outputs.foundation_task_id }}
+      intake_summary_path: ${{ steps.out.outputs.intake_summary_path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Placeholder - Codex intake synthesis
+        run: |
+          echo "TODO: invoke Codex intake helper"
+          echo "Expected label updates: ai:intake -> ai:planning"
+
+      - name: Define placeholder outputs
+        id: out
+        run: |
+          echo "foundation_task_id=intake-${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+          echo "intake_summary_path=.ai/sessions/intake-${{ github.run_id }}/status.md" >> "$GITHUB_OUTPUT"

@@ -1,0 +1,58 @@
+name: implementation-start
+
+# PURPOSE:
+# Initialize implementation execution for an approved task package.
+# TRIGGER PLACEHOLDER:
+# - workflow_dispatch (future: on label ai:ready-for-implementation)
+# EXPECTED INPUTS:
+# - task_id, task_package_file, risk_level
+# EXPECTED OUTPUTS:
+# - branch_name, implementation_session_path
+# CODEX INTEGRATION:
+# - Placeholder to call Codex implementation planner (not coding here).
+# STATUS LABELS TO APPLY:
+# - ai:implementing, ai:self-validating
+# ARTIFACTS READ:
+# - docs/planning/task-packages/TASK-xxx.md, docs/planning/backlog.md
+# ARTIFACTS WRITE:
+# - .ai/sessions/<task-id>/status.md (implementation session trace)
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: "Task id (e.g., TASK-001)"
+        required: true
+        type: string
+      task_package_file:
+        description: "Path to task package file"
+        required: true
+        type: string
+      risk_level:
+        description: "risk:low|risk:medium|risk:high"
+        required: true
+        type: choice
+        options:
+          - risk:low
+          - risk:medium
+          - risk:high
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.out.outputs.branch_name }}
+      implementation_session_path: ${{ steps.out.outputs.implementation_session_path }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder - Codex implementation kickoff
+        run: |
+          echo "TODO: call Codex task implementation planner"
+          echo "Transition labels: ai:ready-for-implementation -> ai:implementing"
+
+      - name: Define placeholder outputs
+        id: out
+        run: |
+          echo "branch_name=feature/${{ inputs.task_id }}" >> "$GITHUB_OUTPUT"
+          echo "implementation_session_path=.ai/sessions/${{ inputs.task_id }}/status.md" >> "$GITHUB_OUTPUT"
