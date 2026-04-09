@@ -494,19 +494,6 @@ components:
       properties:
         redemptionId:
           type: string
-    RedemptionRequest:
-      type: object
-      required: [gdiAmount, shippingAddressId]
-      properties:
-        gdiAmount:
-          type: string
-        shippingAddressId:
-          type: string
-    RedemptionResponse:
-      type: object
-      properties:
-        redemptionId:
-          type: string
           example: red_332
         status:
           type: string
