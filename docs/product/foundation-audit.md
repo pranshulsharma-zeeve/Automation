@@ -1,93 +1,109 @@
 # Foundation Pack Audit against `/docs/product/srs.md`
 
-Date: 2026-04-08
-
-## Executive Summary
-The current Foundation Pack is **not aligned** to the SRS domain. The SRS specifies a blockchain-based digital gold tokenization platform (GolDefi), while most Foundation Pack artifacts describe a generic “Foundation Pack Orchestrator” documentation product. This creates a structural contradiction that blocks reliable backlog generation.
-
-## Audit Scope
-Reviewed artifacts:
+**Date:** 2026-04-09
+**Audited Artifacts:**
 - Product: `brief.md`, `priorities.md`, `scope.md`, `open-questions.md`
 - Architecture: `overview.md`, `decisions.md`
 - Flows: `user-flows.md`, `process-flows.md`
 - Design: `wireframes.md`, `branding.md`, `design-system.md`
 - API: `openapi.yaml`
 - QA: `acceptance-matrix.md`, `test-strategy.md`
-- Source baseline: `srs.md`
 
-## Findings by Review Dimension
+---
 
-### 1) Missing Requirements
-- Most SRS functional requirements are missing from Foundation artifacts: user/distributor/auditor/admin roles, KYC workflow, token buying methods (crypto/card/bank/cash), tokenization operations, redemption lifecycle, audit report/IPFS hash handling, meta-transactions, fee/threshold configuration, and blockchain event/indexing behavior.
-- Missing explicit support for country gray/blacklist onboarding rules and configurable signup options.
-- Missing role-specific portal menu behavior from SRS feature list.
+## 1) Audit Summary
+The Foundation Pack is now broadly aligned to the GolDefi SRS domain and includes all required artifact classes. Core MVP scope, architecture framing, user/process flows, design foundations, API endpoints, and QA traceability are present. However, several implementation-critical details remain incomplete, primarily around operational contracts, asynchronous API behavior, and enforceable NFR thresholds.
 
-### 2) Contradictions
-- **Primary contradiction:** SRS product = GolDefi tokenization platform; Foundation docs product = “Foundation Pack Orchestrator.”
-- Acceptance and test artifacts validate documentation completeness rather than GolDefi platform behavior.
-- API contract models artifact management/readiness, not GolDefi business capabilities.
+---
 
-### 3) Architecture Gaps
-- No target architecture for wallet integration, blockchain writes/reads, signer authorization, custody/vault workflows, or multi-party operational roles from SRS.
-- No integration architecture for Sumsub, Stripe, bank transfer reconciliation, distributor-assisted cash verification, email/SMS notifications.
-- No audit-trail architecture for signed records + IPFS hash persistence + on-chain references.
+## 2) Findings by Review Dimension
 
-### 4) Undefined Flows
-- Critical SRS flows not represented end-to-end: registration + KYC + wallet connection, cash order distributor OTP flow, bank transfer verification and rejection, tokenization operator process, redemption quotation/confirmation/burn sequence, auditor lifecycle stages.
-- Failure/cancellation/exception flows are incompletely specified despite explicit SRS states.
+### A. Missing Requirements
+- SRS references richer admin configuration semantics (e.g., detailed threshold/rule versioning and explicit policy publish controls) than currently specified in API contracts.
+- SRS expects stronger observability/SLO specifics; foundation docs mention monitoring but do not lock measurable thresholds per subsystem.
 
-### 5) Missing Screen States
-- Wireframes do not define SRS-specific screens or state transitions for order/payment/redemption/audit entities.
-- Missing UI states for: unauthorized wallet during admin payment verification, KYC pending/failed/extra-docs, order statuses (draft/paid/minted/cancelled), redemption stages, audit stages, and threshold-trigger behavior.
+### B. Contradictions
+- No major cross-domain contradiction detected between SRS and foundation docs.
+- Minor tension remains: SRS mentions possible meta-transaction context; foundation artifacts keep it as later/undecided. This is tracked as an open question.
 
-### 6) Incomplete API Behavior
-- OpenAPI lacks endpoints/schemas for GolDefi domain entities and operations (users, distributors, audits, orders, tokenization, redemption, fee config, thresholds, meta-tx, notifications).
-- No idempotency/retry/error taxonomy for payment and blockchain-bound operations.
-- No webhook/event model for asynchronous status updates.
+### C. Architecture Gaps
+- No concrete DR topology decision (single region vs multi-region, failover triggers).
+- No finalized provider fallback strategy encoded in architecture decision records.
+- No explicit reconciliation job ownership/runbook definition.
 
-### 7) Missing Branding Guidance
-- Branding provides generic tone/colors but no domain UI communication guidance for financial+compliance-sensitive actions (risk disclosures, fee transparency, legal confirmations, wallet-signature prompts).
-- No content standards for high-trust transactional messaging across user roles.
+### D. Undefined Flows
+- Exception paths are partially covered but not fully enumerated for:
+  - payment callback timeout/replay collisions,
+  - redemption fulfillment failure loops,
+  - audit exception remediation SLA paths.
 
-### 8) Missing Acceptance Criteria
-- Acceptance matrix criteria are generic and not mapped to SRS features or role-based workflows.
-- No objective pass/fail criteria for monetary correctness (fees, token calculations), audit integrity, and irreversible operations (mint/burn).
+### E. Missing Screen States
+- Wireframes cover core screens but lack complete state matrix for:
+  - KYC rejected/needs-more-docs variant messaging,
+  - order failure/retry states,
+  - redemption exception and dispute states,
+  - distributor lockout/suspension state.
 
-### 9) Missing Non-Functional Requirements
-- SRS-aligned NFRs are not fully specified: security controls, operational auditability, reliability targets for payment+blockchain flows, reconciliation SLAs, data retention/privacy obligations, and observability requirements.
+### F. Incomplete API Behavior
+- OpenAPI does not yet specify webhook endpoints for asynchronous provider callbacks.
+- Idempotency contract headers/keys are not explicitly defined in API contract.
+- Error taxonomy exists but is not standardized per endpoint with canonical codes.
 
-### 10) Unclear Dependencies
-- Dependency contracts are undefined for Sumsub, Stripe, MetaMask/provider stack, relayer/forwarder services, bank operations, IPFS/ZDFS, email/SMS providers, and vault operations handoff boundaries.
+### G. Missing Branding Guidance
+- Brand foundations are present; however, legal/compliance copy rules by jurisdiction remain unresolved and block final content standardization.
 
-## Completed Areas
-- Foundation Pack artifact set exists and follows required repository structure.
-- Documentation-first gating intent is captured (no backlog before readiness).
-- Open questions registry mechanism exists.
+### H. Missing Acceptance Criteria
+- Acceptance matrix covers core MVP features but has limited explicit pass/fail thresholds for observability and operational resilience (e.g., alert latency, reconciliation drift tolerance).
 
-## Weak Areas
-- Cross-artifact traceability to SRS requirements is largely absent.
-- Flows, API, design, and QA do not represent GolDefi business domain.
-- NFRs and dependency contracts are insufficient for implementation planning.
+### I. Missing Non-Functional Requirements
+- NFR targets from SRS are not consistently mirrored in foundation QA/architecture artifacts as explicit, testable SLO values.
 
-## Blocked Areas
-- Backlog readiness is blocked by unresolved product-direction conflict (SRS vs authored domain).
-- Architecture and API finalization blocked until MVP scope and compliance baseline are explicitly confirmed.
-- Acceptance and test completion blocked until role/entity/state model is rewritten around SRS.
+### J. Unclear Dependencies
+- External dependency SLAs and ownership boundaries (KYC, payment rails, custodian operations) remain partially undefined.
 
-## Recommended Fixes (in order)
-1. Resolve product-direction decision (align to GolDefi SRS or replace SRS).
-2. Rewrite product artifacts (`brief`, `priorities`, `scope`) to match chosen direction.
-3. Rebuild architecture + ADRs for domain integrations, data model, trust boundaries, and operational controls.
-4. Redefine user/process flows with full state models for each major lifecycle.
-5. Rework wireframes/screen inventory for role-specific portals and edge/error states.
-6. Replace OpenAPI with domain-complete contracts, error taxonomy, and async/event behavior.
-7. Rebuild acceptance matrix and test strategy with requirement-level traceability and measurable pass criteria.
-8. Keep only high-value unresolved questions and assign owners/dates.
+---
 
-## Foundation Readiness Verdict
+## 3) Completed Areas
+- Product artifacts are aligned to GolDefi domain and clearly separate MVP vs later phase.
+- Architecture overview and ADR set exist and match compliance-first and token-lifecycle priorities.
+- User and process flows are documented in step-by-step form for major lifecycles.
+- Design set includes screen inventory, textual wireframes, branding, and design system foundations.
+- OpenAPI contract includes core domain endpoints and request/response schema examples.
+- QA artifacts include acceptance matrix and test strategy mapping.
+
+---
+
+## 4) Weak Areas
+- API async behavior and idempotency semantics require explicit contract-level detail.
+- Edge/error screen states are not fully enumerated.
+- NFR/SLO thresholds are under-specified for operational verification.
+- Dependency contracts and SLA ownership are not fully defined.
+
+---
+
+## 5) Blocked Areas
+- Final backlog readiness is blocked by unresolved governance-level decisions:
+  - jurisdiction/compliance baseline,
+  - provider commitments and fallback behavior,
+  - final readiness sign-off authority,
+  - operational SLAs for redemption and incident response.
+
+---
+
+## 6) Recommended Fixes (Priority Order)
+1. Add explicit webhook and idempotency behavior to OpenAPI (headers, replay strategy, timeout/error models).
+2. Extend wireframes with screen-state matrix for failure/exception and compliance remediation states.
+3. Add NFR appendix to architecture + QA docs with measurable SLO targets and acceptance thresholds.
+4. Formalize dependency SLAs/owners for KYC, payment providers, custodian, and incident response.
+5. Resolve high-value open questions and record sign-off authority for readiness decisions.
+
+---
+
+## 7) Foundation Readiness Verdict
 **NOT READY**
 
-Rationale: The current Foundation Pack is internally coherent as a documentation-orchestrator concept but is not coherent with `/docs/product/srs.md`. Because of this contradiction and missing SRS-critical coverage, backlog generation would be low-confidence and high-risk.
+### Rationale
+The foundation is substantially improved and mostly aligned, but unresolved high-value governance and operational contract items still create material risk for reliable implementation planning. Backlog generation should remain blocked until the listed high-impact questions and API/NFR gaps are addressed.
 
 ---
 
