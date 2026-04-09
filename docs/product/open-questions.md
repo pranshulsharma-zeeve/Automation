@@ -1,12 +1,13 @@
-# Open Questions
+# GolDefi Open Questions (High-Value Only)
 
-Only high-value unresolved questions that block reliable completion of the Foundation Pack.
+Only unresolved assumptions that materially block safe implementation planning or release readiness.
 
-1. **Product direction lock:** Should the Foundation Pack be aligned to the GolDefi digital-gold tokenization product defined in `/docs/product/srs.md`, or should the SRS be replaced with one for the current “Foundation Pack Orchestrator” concept?
-2. **MVP boundary confirmation:** If GolDefi is the target, which payment methods are in MVP (USDT, card via Stripe, bank transfer, cash via distributor), and which are explicitly deferred?
-3. **Compliance baseline:** What exact compliance obligations are mandatory for MVP (e.g., KYC/AML jurisdictions, data residency, retention, sanctions screening, auditability)?
-4. **Blockchain execution model:** Which chain/environment and smart-contract control model are required in MVP (direct MetaMask only vs relayer/meta-transactions, threshold routing behavior, signer authorization model)?
-5. **Operational ownership:** Who is the final approval authority for tokenization, redemption, audit exceptions, and readiness-to-backlog decisions?
-6. **External integration contracts:** What are the required integration SLAs/error-handling expectations for Sumsub, Stripe, bank verification process, wallet providers, and email/SMS providers?
-7. **Non-functional targets:** What are the approved MVP SLOs for availability, latency, throughput, RTO/RPO, and security incident response?
-8. **Fee/valuation governance:** What source-of-truth and cadence govern gold rate updates, platform fee tables, and dispute handling for quote/payment mismatches?
+1. **Regulatory launch scope:** What exact launch jurisdictions are in MVP, and what legally approved blacklist/greylist policy set applies on day 1?
+2. **Compliance control baseline:** Which controls are mandatory at launch (sanctions lists, PEP handling, enhanced due diligence triggers, retention obligations) per jurisdiction?
+3. **Payment rail commitment:** Which specific card and bank providers are approved for MVP, and what SLA/retry/failover behavior is contractually guaranteed?
+4. **Cash-distributor rollout boundary:** Is distributor cash flow full-MVP across all launch regions, or a controlled pilot with region gating?
+5. **Blockchain production decision:** Which chain/network is authoritative for launch, and what documented fallback/incident policy governs degraded chain conditions?
+6. **Redemption operations SLA:** What are the custodian SLAs, exception escalation paths, and ownership model for redemption delays/failures?
+7. **Fee and threshold governance:** Who approves fee/threshold updates, at what cadence, and what change-control process is required?
+8. **Data residency and security ops:** What are mandatory data residency boundaries, incident response SLAs, and cryptographic key rotation policies?
+9. **Readiness gate authority:** Who is the final decision-maker for “READY FOR BACKLOG” sign-off when Product, Compliance, and Operations disagree?
