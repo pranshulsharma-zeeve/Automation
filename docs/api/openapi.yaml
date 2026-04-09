@@ -494,6 +494,7 @@ components:
       properties:
         redemptionId:
           type: string
+          example: red_332
         status:
           type: string
           enum: [REQUESTED, VERIFIED, LOCKED, BURNED, FULFILLMENT, COMPLETED, FAILED]
