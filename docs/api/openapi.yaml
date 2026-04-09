@@ -1,10 +1,11 @@
 openapi: 3.0.3
 info:
   title: GolDefi Platform API
-  version: 1.0.0
+  version: 1.1.0
   description: >-
     Core API contracts for GolDefi onboarding, KYC gating, orders, payments,
-    tokenization, redemption, distributor workflows, and audit operations.
+    tokenization, redemption, distributor workflows, audit operations, and
+    asynchronous provider callbacks.
 servers:
   - url: https://api.goldefi.example.com/v1
 security:
@@ -20,17 +21,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
-            example:
-              dob: "1992-10-08"
-              country: "AE"
-              profession: "Engineer"
-              sector: "Technology"
-              annualRevenue: "50000-100000"
-              declarationAccepted: true
-              name: "Jane Doe"
-              email: "jane@example.com"
-              phone: "+971500000000"
-              password: "Str0ngPass!"
       responses:
         '201':
           description: Registration initiated; email OTP sent
@@ -39,11 +29,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RegisterResponse'
         '400':
-          description: Validation or policy failure
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequest'
   /auth/verify-email-otp:
     post:
       summary: Verify email OTP
@@ -73,11 +59,7 @@ paths:
                     type: boolean
                     example: true
         '401':
-          description: Invalid OTP
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Unauthorized'
   /kyc/status:
     get:
       summary: Retrieve KYC status for current user
@@ -116,9 +98,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/QuoteRequest'
-            example:
-              gdiAmount: "1500"
-              paymentMethod: "CRYPTO_USDT"
       responses:
         '200':
           description: Quote generated
@@ -130,6 +109,8 @@ paths:
     post:
       summary: Create purchase order
       tags: [Orders]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -143,6 +124,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '409':
+          $ref: '#/components/responses/Conflict'
   /orders/{orderId}:
     get:
       summary: Get order details by ID
@@ -161,11 +144,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
         '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/NotFound'
   /distributor/orders/lookup:
     post:
       summary: Lookup cash order by orderId and user email
@@ -204,6 +183,7 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -228,6 +208,8 @@ paths:
     post:
       summary: Create redemption request
       tags: [Redemption]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -281,12 +263,104 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuditResponse'
+
+  # Asynchronous provider callbacks
+  /webhooks/payments/{provider}:
+    post:
+      summary: Receive payment provider callback event
+      tags: [Webhooks]
+      security:
+        - webhookSignature: []
+      parameters:
+        - in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+            enum: [CRYPTO_USDT, CARD, BANK]
+        - $ref: '#/components/parameters/WebhookSignature'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentWebhookEvent'
+      responses:
+        '202':
+          description: Event accepted for async processing
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /webhooks/kyc/sumsub:
+    post:
+      summary: Receive KYC provider status callback
+      tags: [Webhooks]
+      security:
+        - webhookSignature: []
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KycWebhookEvent'
+      responses:
+        '202':
+          description: Event accepted for async processing
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    webhookSignature:
+      type: apiKey
+      in: header
+      name: X-Signature
+
+  parameters:
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: true
+      schema:
+        type: string
+      description: Unique key used to prevent duplicate request side-effects.
+    WebhookSignature:
+      in: header
+      name: X-Signature
+      required: true
+      schema:
+        type: string
+      description: Provider signature used to verify callback authenticity.
+
+  responses:
+    BadRequest:
+      description: Validation or policy failure
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Authentication/signature failure
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Idempotency or state conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
   schemas:
     RegisterRequest:
       type: object
@@ -333,14 +407,12 @@ components:
         reasonCode:
           type: string
           nullable: true
-          example: null
     WalletBindRequest:
       type: object
       required: [walletAddress, challenge, signature]
       properties:
         walletAddress:
           type: string
-          example: "0x1234...abcd"
         challenge:
           type: string
         signature:
@@ -352,14 +424,12 @@ components:
           type: string
         verified:
           type: boolean
-          example: true
     QuoteRequest:
       type: object
       required: [gdiAmount, paymentMethod]
       properties:
         gdiAmount:
           type: string
-          example: "1000"
         paymentMethod:
           type: string
           enum: [CRYPTO_USDT, CARD, BANK, CASH]
@@ -368,7 +438,6 @@ components:
       properties:
         quoteId:
           type: string
-          example: q_1202
         gdiAmount:
           type: string
         platformFeeGdi:
@@ -392,7 +461,6 @@ components:
       properties:
         orderId:
           type: string
-          example: ord_9321
         status:
           type: string
           enum: [DRAFT, SUBMITTED, PAYMENT_PENDING, PAID, MINTED, FAILED, CANCELLED]
@@ -412,6 +480,19 @@ components:
         amountReceived:
           type: string
         distributorSignature:
+          type: string
+    RedemptionRequest:
+      type: object
+      required: [gdiAmount, shippingAddressId]
+      properties:
+        gdiAmount:
+          type: string
+        shippingAddressId:
+          type: string
+    RedemptionResponse:
+      type: object
+      properties:
+        redemptionId:
           type: string
     RedemptionRequest:
       type: object
@@ -459,25 +540,55 @@ components:
                 type: string
         digitalSignature:
           type: string
-    AuditResponse:
+    PaymentWebhookEvent:
       type: object
+      required: [eventId, orderId, providerStatus, occurredAt]
       properties:
-        auditId:
+        eventId:
           type: string
-          example: aud_902
-        status:
+        orderId:
           type: string
-          enum: [DRAFT, PENDING, DOCUMENTS_UPLOADED, AUDITED, EXCEPTION, CANCELLED, DONE]
+        providerStatus:
+          type: string
+          enum: [CONFIRMED, FAILED, PENDING]
+        occurredAt:
+          type: string
+          format: date-time
+        payload:
+          type: object
+          additionalProperties: true
+    KycWebhookEvent:
+      type: object
+      required: [eventId, applicantId, kycStatus, occurredAt]
+      properties:
+        eventId:
+          type: string
+        applicantId:
+          type: string
+        kycStatus:
+          type: string
+          enum: [PENDING_REVIEW, APPROVED, REJECTED]
+        occurredAt:
+          type: string
+          format: date-time
+        reasonCode:
+          type: string
+          nullable: true
     Error:
       type: object
       required: [code, message]
       properties:
         code:
           type: string
-          example: POLICY_BLOCKED
+          enum:
+            - POLICY_BLOCKED
+            - VALIDATION_ERROR
+            - SIGNATURE_INVALID
+            - IDEMPOTENCY_CONFLICT
+            - STATE_CONFLICT
+            - NOT_FOUND
         message:
           type: string
-          example: User is not eligible to perform this action.
         details:
           type: object
           additionalProperties: true

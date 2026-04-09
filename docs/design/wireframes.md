@@ -97,6 +97,20 @@
 +--------------------------------------------------------------------------------+
 ```
 
-## Ambiguities Identified
-- Final mobile responsiveness breakpoints.
-- Which screens require mandatory MFA re-authentication.
+---
+
+## Required Screen-State Matrix (MVP)
+| Screen | Required States |
+|---|---|
+| Signup + KYC | eligible, blacklisted blocked, greylist extra-docs required, KYC pending, KYC rejected |
+| Buy GDI | quote_success, payment_pending, payment_failed_retry, payment_confirmed_minting, minted |
+| Orders | submitted, payment_pending, paid, minted, failed, cancelled |
+| Redemption | requested, verified, locked, burned, fulfillment, completed, exception |
+| Distributor Console | awaiting_otp, otp_validated, otp_failed_lockout, distributor_suspended |
+| Audit Submission | draft, pending, document_missing, signature_invalid, audited, exception |
+| Admin Policy | draft_config, validation_error, publish_success |
+
+## Interaction/Copy Requirements for State Screens
+- Every blocked/failed state must show reason code and next action.
+- Irreversible actions (mint/burn/publish policy) require explicit confirmation text.
+- SLA-impacting delays (payment callback timeout, redemption delay) require proactive notification banners.
