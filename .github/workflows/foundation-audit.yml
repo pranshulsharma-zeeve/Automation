@@ -1,0 +1,56 @@
+name: foundation-audit
+
+# PURPOSE:
+# Validate foundation artifacts against SRS and determine readiness verdict.
+# TRIGGER PLACEHOLDER:
+# - workflow_dispatch (future: issue label ai:foundation-ready)
+# EXPECTED INPUTS:
+# - task_id, audit_scope, strict_mode
+# EXPECTED OUTPUTS:
+# - readiness_verdict, audit_report_path
+# CODEX INTEGRATION:
+# - Placeholder for Codex audit run over docs/product + docs/* foundation set.
+# STATUS LABELS TO APPLY:
+# - ai:foundation-ready, ai:approved-for-backlog OR ai:revision-requested
+# ARTIFACTS READ:
+# - docs/product/srs.md, docs/product/open-questions.md, foundation docs under docs/*
+# ARTIFACTS WRITE:
+# - docs/product/foundation-audit.md, .ai/sessions/<task-id>/status.md
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: "Foundation task id"
+        required: true
+        type: string
+      audit_scope:
+        description: "Path scope, e.g. docs/"
+        required: true
+        type: string
+        default: "docs/"
+      strict_mode:
+        description: "Fail if any weak area exists"
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    outputs:
+      readiness_verdict: ${{ steps.out.outputs.readiness_verdict }}
+      audit_report_path: ${{ steps.out.outputs.audit_report_path }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder - Codex foundation audit
+        run: |
+          echo "TODO: call Codex foundation audit"
+          echo "Expected label updates based on verdict"
+
+      - name: Define placeholder outputs
+        id: out
+        run: |
+          echo "readiness_verdict=READY_FOR_BACKLOG" >> "$GITHUB_OUTPUT"
+          echo "audit_report_path=docs/product/foundation-audit.md" >> "$GITHUB_OUTPUT"

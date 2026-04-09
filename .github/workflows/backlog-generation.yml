@@ -1,0 +1,58 @@
+name: backlog-generation
+
+# PURPOSE:
+# Generate/refresh epics, backlog items, task packages, and issue drafts after foundation approval.
+# TRIGGER PLACEHOLDER:
+# - workflow_dispatch (future: on label ai:approved-for-backlog)
+# EXPECTED INPUTS:
+# - task_id, regenerate_existing, max_tasks
+# EXPECTED OUTPUTS:
+# - backlog_path, task_package_count, github_issue_drafts_path
+# CODEX INTEGRATION:
+# - Placeholder where Codex generates docs/planning artifacts.
+# STATUS LABELS TO APPLY:
+# - ai:approved-for-backlog, ai:task-packaged, ai:ready-for-implementation
+# ARTIFACTS READ:
+# - docs/product/foundation-audit.md, docs/product/srs.md, docs/* foundation docs
+# ARTIFACTS WRITE:
+# - docs/planning/epics.md, docs/planning/backlog.md, docs/planning/task-packages/*, docs/planning/github-issues/*
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: "Foundation task id"
+        required: true
+        type: string
+      regenerate_existing:
+        description: "Overwrite existing planning docs"
+        required: true
+        type: boolean
+        default: false
+      max_tasks:
+        description: "Task package generation ceiling"
+        required: true
+        type: number
+        default: 20
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    outputs:
+      backlog_path: ${{ steps.out.outputs.backlog_path }}
+      task_package_count: ${{ steps.out.outputs.task_package_count }}
+      github_issue_drafts_path: ${{ steps.out.outputs.github_issue_drafts_path }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder - Codex backlog generation
+        run: |
+          echo "TODO: invoke Codex planning generator"
+          echo "Apply labels: ai:task-packaged, ai:ready-for-implementation"
+
+      - name: Define placeholder outputs
+        id: out
+        run: |
+          echo "backlog_path=docs/planning/backlog.md" >> "$GITHUB_OUTPUT"
+          echo "task_package_count=0" >> "$GITHUB_OUTPUT"
+          echo "github_issue_drafts_path=docs/planning/github-issues" >> "$GITHUB_OUTPUT"

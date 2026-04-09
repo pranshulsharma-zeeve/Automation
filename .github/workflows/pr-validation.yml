@@ -1,0 +1,45 @@
+name: pr-validation
+
+# PURPOSE:
+# Validate implementation PRs for required evidence, tests, and doc traceability.
+# TRIGGER PLACEHOLDER:
+# - pull_request (opened, synchronize, reopened)
+# EXPECTED INPUTS:
+# - PR metadata, changed files, optional task_id annotation
+# EXPECTED OUTPUTS:
+# - validation_result, evidence_check_report
+# CODEX INTEGRATION:
+# - Placeholder for Codex evidence/audit summary checker.
+# STATUS LABELS TO APPLY:
+# - ai:self-validating, ai:ready-for-verification OR ai:revision-requested
+# ARTIFACTS READ:
+# - changed files in PR, docs/planning/task-packages/*, AGENTS.md
+# ARTIFACTS WRITE:
+# - validation report artifact, PR comment summary
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      validation_result: ${{ steps.out.outputs.validation_result }}
+      evidence_check_report: ${{ steps.out.outputs.evidence_check_report }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder - Run repository checks
+        run: |
+          echo "TODO: run lint/type/test/build gates"
+
+      - name: Placeholder - Codex PR evidence validator
+        run: |
+          echo "TODO: check requirements covered/tests/files changed/unresolved/risk/confidence"
+
+      - name: Define placeholder outputs
+        id: out
+        run: |
+          echo "validation_result=pending" >> "$GITHUB_OUTPUT"
+          echo "evidence_check_report=artifacts/pr-evidence-report.md" >> "$GITHUB_OUTPUT"

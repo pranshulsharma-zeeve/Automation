@@ -1,47 +1,77 @@
-# Architecture Overview
+# GolDefi Architecture Overview
 
 ## Architecture Goals
-- Documentation-first artifact lifecycle with strict prerequisite ordering.
-- Clear traceability between requirements, design, API, and QA artifacts.
-- Extensible model to support future automation and integrations.
+1. Enforce compliance and policy gates before monetary operations.
+2. Keep token lifecycle (mint/burn) auditable and strongly traceable.
+3. Support modular service boundaries for future multi-vault expansion.
+4. Maintain high availability and operational observability.
 
-## Proposed High-Level Architecture
-1. **Frontend (Web UI)**
-   - Artifact editor and review workflows.
-   - Open questions management.
-2. **Backend API Service**
-   - Artifact CRUD, validation status, and dependency checks.
-   - Task-package readiness checks.
-3. **Storage Layer**
-   - Document store for markdown/YAML artifacts.
-   - Metadata store for status, ownership, and revision history.
-4. **Validation Engine**
-   - Runs consistency checks and readiness gates.
-5. **Integration Layer (Later Phase)**
-   - Connectors for Git hosting, issue trackers, and notifications.
+## System Context
+GolDefi provides multi-portal web access (user, distributor, auditor, admin) backed by domain services for identity, KYC, orders, payments, tokenization, redemption, and audits. External integrations include KYC provider(s), payment rails, blockchain RPC/indexing, and custodian operations.
 
-## Data Entities
-- ProductBrief
-- Priorities
-- Scope
-- ArchitectureOverview
-- ArchitectureDecision
-- UserFlow
-- ProcessFlow
-- WireframeSpec
-- BrandingSpec
-- DesignSystemSpec
-- ApiContract
-- AcceptanceMatrix
-- TestStrategy
-- OpenQuestion
-- TaskPackage
+## Logical Components
+- **API Gateway:** entry point, auth checks, throttling, routing.
+- **Identity & Access Service:** account lifecycle, OTP/MFA, sessions, RBAC.
+- **KYC Orchestrator:** applicant lifecycle and provider callback processing.
+- **Order Service:** quotes, order lifecycle, status model.
+- **Payment Service:** method-specific confirmation and webhook processing.
+- **Tokenization Service:** mint orchestration, on-chain writes, ledger sync.
+- **Redemption Service:** request validation, lock/burn lifecycle, fulfillment handoff.
+- **Audit Service:** audit workflows, document metadata, signatures.
+- **Policy/Config Service:** country controls, limits, fee rules, admin configs.
+- **Notification Service:** email/SMS lifecycle notifications.
 
-## Non-Functional Targets (Assumed)
-- Availability: 99.5% (MVP assumption)
-- P95 artifact read latency: < 500 ms
-- P95 write latency: < 1200 ms
+## Data and Platform
+- **Operational DB:** relational store for user/order/redemption/audit state.
+- **Cache/Session Store:** low-latency session and short-lived workflow state.
+- **Event Bus/Queue:** asynchronous processing for callbacks and retries.
+- **Object/IPFS-compatible Storage:** audit/compliance evidence storage.
+- **Blockchain Layer:** smart contract reads/writes + indexer for event ingestion.
 
-## Ambiguities Identified
-- Final hosting model and infra stack are undefined.
-- True performance and scale targets not provided.
+## Cross-Cutting Controls
+- Centralized authZ/authN policy enforcement.
+- Idempotency keys for payment and mint operations.
+- Structured logging, tracing, and alerting.
+- Encryption at rest and in transit; key management via KMS/HSM.
+- Replay protection for provider callbacks and signed requests.
+
+## Deployment Topology (Target)
+- Frontend apps behind CDN + WAF.
+- Backend services in containerized orchestration environment.
+- Isolated environments for dev/staging/prod.
+- Observability stack with dashboards and on-call alerts.
+- DR pattern: warm-standby secondary environment with RPO <= 15 min and RTO <= 60 min.
+
+## External Dependency Contracts (MVP)
+- **KYC Provider:** status callbacks signed, 99.5% monthly availability target.
+- **Payment Providers:** callback signature + replay window enforcement; retry-safe events.
+- **Blockchain Provider:** transaction broadcast + receipt retrieval with fallback RPC endpoint.
+- **Custodian Ops:** redemption fulfillment acknowledgements and exception feedback loop.
+- **Email/SMS:** OTP delivery and transactional notifications.
+
+## NFR Baseline (MVP, testable)
+| Area | Target |
+|---|---|
+| API latency (non-chain) | p95 < 500ms |
+| Payment confirmed -> Minted | p95 < 3 minutes |
+| Redemption initiation post-approval | p95 < 15 minutes |
+| Platform availability | >= 99.9% monthly |
+| Logging coverage for critical flows | 100% of payment/mint/burn/redemption transitions |
+| Alerting latency for critical failures | < 5 minutes |
+
+## MVP vs Later-Phase Architecture
+### MVP
+- Single-vault operational model.
+- Primary payment providers only.
+- Baseline reconciliation jobs and alerting.
+
+### Later Phase
+- Multi-vault orchestration/routing.
+- Provider redundancy and failover automation.
+- Deeper risk analytics pipeline.
+
+## Dependencies Resolved from SRS
+- Compliance-first purchase gate is mandatory.
+- Cash distributor OTP model is retained.
+- Redemption requires lock -> burn -> fulfillment sequence.
+- Audit evidence integrity workflow is mandatory.

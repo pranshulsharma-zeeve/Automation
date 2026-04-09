@@ -1,0 +1,53 @@
+name: revision-loop
+
+# PURPOSE:
+# Handle revision feedback loop when verification fails or changes are requested.
+# TRIGGER PLACEHOLDER:
+# - workflow_dispatch (future: on label ai:revision-requested)
+# EXPECTED INPUTS:
+# - task_id, revision_notes, reviewer
+# EXPECTED OUTPUTS:
+# - revision_plan_path, revision_status
+# CODEX INTEGRATION:
+# - Placeholder for Codex to produce targeted revision plan + doc/code delta checklist.
+# STATUS LABELS TO APPLY:
+# - ai:revision-requested, ai:implementing, ai:self-validating
+# ARTIFACTS READ:
+# - PR comments/review notes, related task package, current branch diff
+# ARTIFACTS WRITE:
+# - revision plan artifact, updated session status
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: "Task id under revision"
+        required: true
+        type: string
+      revision_notes:
+        description: "Reviewer-requested changes"
+        required: true
+        type: string
+      reviewer:
+        description: "Reviewer username"
+        required: true
+        type: string
+
+jobs:
+  revise:
+    runs-on: ubuntu-latest
+    outputs:
+      revision_plan_path: ${{ steps.out.outputs.revision_plan_path }}
+      revision_status: ${{ steps.out.outputs.revision_status }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder - Codex revision planner
+        run: |
+          echo "TODO: generate revision plan from review feedback"
+
+      - name: Define placeholder outputs
+        id: out
+        run: |
+          echo "revision_plan_path=artifacts/revision-plan-${{ inputs.task_id }}.md" >> "$GITHUB_OUTPUT"
+          echo "revision_status=in_progress" >> "$GITHUB_OUTPUT"
