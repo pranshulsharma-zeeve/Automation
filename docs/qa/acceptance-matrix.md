@@ -1,17 +1,21 @@
-# Acceptance Matrix
+# GolDefi Acceptance Matrix
 
-| Feature | MVP/Later | Acceptance Criteria | Evidence Required |
-|---|---|---|---|
-| Foundation artifact creation | MVP | All required artifact files exist and contain non-placeholder structured content. | Document review checklist |
-| Artifact consistency check | MVP | Cross-references (scope, architecture, API, QA) show no unresolved contradictions. | Review sign-off + issue log |
-| Open questions tracking | MVP | Unresolved assumptions are documented with owner and status. | `docs/product/open-questions.md` completeness |
-| MVP vs later separation | MVP | Each artifact distinguishes MVP and post-MVP items. | Reviewer validation notes |
-| API contract quality | MVP | OpenAPI includes paths, schemas, and error model examples. | Contract lint + peer review |
-| Acceptance-to-test alignment | MVP | Each MVP feature has matching test strategy coverage. | Traceability table review |
-| Readiness gate for backlog generation | MVP | Backlog generation is blocked when required artifacts/criteria are incomplete. | Gate checklist output |
-| Automated consistency linting | Later | Semantic checks detect conflicts automatically. | Lint report |
-| Integration connectors | Later | External tool sync works for configured systems. | Integration test report |
+| Feature ID | Feature | MVP/Later | Acceptance Criteria | Validation Method |
+|---|---|---|---|---|
+| AC-01 | Registration + OTP | MVP | User can register, receive OTP, and verify account; blacklisted countries are blocked. | API + E2E |
+| AC-02 | KYC gating | MVP | Unapproved KYC users cannot buy/redeem; approved users can proceed. | Integration + E2E |
+| AC-03 | Wallet binding/update | MVP | Wallet bind requires valid signature; wallet update triggers verification workflow. | API + Security |
+| AC-04 | Buy flow quote/order | MVP | User receives deterministic fee/total quote and can create order with selected payment method. | API + E2E |
+| AC-05 | Payment-to-mint integrity | MVP | Mint occurs only after verified payment and policy checks; tx hash recorded. | Integration + Ledger verify |
+| AC-06 | Cash distributor flow | MVP | Distributor must use orderId+email and OTP before payment registration; unauthorized access blocked. | E2E + Security |
+| AC-07 | Redemption lifecycle | MVP | Redemption enforces validate -> lock -> burn -> fulfillment state sequence. | E2E + Contract |
+| AC-08 | Audit workflow | MVP | Auditor can submit signed findings with document references and status updates. | API + Process test |
+| AC-09 | Admin policy controls | MVP | Admin can configure country controls, thresholds, and fees with audit logs. | API + RBAC |
+| AC-10 | Notifications | MVP | Users receive status notifications for key lifecycle events (registration, payment, mint, redemption). | E2E |
+| AC-11 | Observability baseline | MVP | Critical failures emit alerts and traceable logs for payments/mints/redemptions. | Ops validation |
+| AC-12 | Multi-vault routing | Later | System can allocate transactions across multiple vaults by policy. | Integration |
+| AC-13 | Advanced risk scoring | Later | Risk engine flags anomalous activity and supports decisioning. | Model + Integration |
 
 ## Ambiguities Identified
-- No target thresholds for “consistency quality” were defined.
-- No explicit owner for final acceptance sign-off is defined.
+- Ownership of final acceptance sign-off (Product vs Compliance vs Operations).
+- Threshold values for non-functional alerting and error budgets.

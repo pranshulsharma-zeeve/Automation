@@ -1,27 +1,53 @@
-# Branding
+# GolDefi Branding
 
-## Brand Theme
-- **Tone:** Clear, decisive, trustworthy, collaborative.
-- **Personality:** Structured, practical, low-drama, engineering-grade.
-- **Voice:** Concise and evidence-oriented.
+## Brand Positioning
+GolDefi should feel **trustworthy, premium, transparent, and security-first** while staying approachable for first-time digital gold buyers.
 
-## Color System
-- **Primary:** `#1F4B99` (Foundation Blue)
-- **Secondary:** `#0F766E` (Validation Teal)
-- **Accent:** `#7C3AED` (Insight Purple)
-- **Success:** `#15803D`
-- **Warning:** `#B45309`
-- **Error:** `#B91C1C`
-- **Neutral-900:** `#111827`
-- **Neutral-100:** `#F3F4F6`
-- **Background:** `#FFFFFF`
+## Voice and Tone
+- Clear and unambiguous.
+- Professional, compliance-aware messaging.
+- Avoid hype language in transactional flows.
+- Use explicit confirmation language for monetary actions.
 
-## Accessibility Rules
-- Minimum contrast ratio 4.5:1 for body text.
-- Do not use color as the only status indicator.
-- Focus states must be visible for keyboard navigation.
+## Color Theme (v1)
+- **Gold Primary:** `#C9A227`
+- **Navy Primary:** `#0E1A2B`
+- **Slate Secondary:** `#324A5F`
+- **Success:** `#1F9D55`
+- **Warning:** `#D69E2E`
+- **Error:** `#C53030`
+- **Background:** `#F7FAFC`
+- **Text Primary:** `#1A202C`
 
-## Iconography & Visual Language
-- Use simple line icons with consistent 1.5px stroke.
-- Avoid decorative illustrations in workflow-critical screens.
-- Prefer semantic badges for status/risk indicators.
+## Typography
+- **Headings:** Inter SemiBold/Bold
+- **Body:** Inter Regular
+- **Numeric/Technical Data:** JetBrains Mono
+
+## Iconography and Visual Language
+- Use simple, confident line icons for neutral states.
+- Use filled/strong icons for critical and risk actions.
+- Reserve gold accents for primary conversion CTAs.
+- Use shield/check motifs for security and verification states.
+
+## Imagery Guidelines
+- Prefer abstract finance/security motifs over lifestyle imagery.
+- Avoid visuals that imply guaranteed returns.
+- Use vault/gold imagery only where directly relevant.
+
+## Accessibility and Compliance
+- Maintain minimum contrast ratio 4.5:1 for body text.
+- Do not rely only on color to indicate status.
+- Provide text labels for all critical status indicators.
+
+## MVP vs Later Phase
+### MVP
+- Core color, typography, and component theming.
+- Transactional copy standards.
+
+### Later Phase
+- Expanded campaign/marketing visual system.
+- Regionalized messaging tone packs.
+
+## Ambiguities Identified
+- Legal/compliance disclaimer language by jurisdiction.
