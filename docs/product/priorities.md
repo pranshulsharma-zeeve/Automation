@@ -1,34 +1,45 @@
-# Product Priorities
+# GolDefi Product Priorities
 
-## Priority Framework
-- **P0 (Critical):** Must exist for MVP release.
-- **P1 (Important):** Post-MVP near-term.
-- **P2 (Later):** Strategic enhancements.
+## Prioritization Method
+- **P0 (Must Have):** required to launch compliant MVP.
+- **P1 (Should Have):** improves operations and trust, near-term after MVP.
+- **P2 (Could Have):** strategic growth and optimization.
 
-## MVP (P0)
-1. Structured artifact authoring across product, architecture, design, API, and QA.
-2. Traceability links from feature intent -> acceptance criteria -> tests.
-3. Open question tracking and resolution workflow.
-4. Change history for key planning artifacts.
-5. Basic role visibility (who can create/edit/review).
+## P0 — MVP Priorities
+1. **Identity & Access Baseline**
+   - Signup, OTP verification, login, MFA support, RBAC.
+2. **Compliance Gate**
+   - KYC/AML integration and purchase blocking until approved.
+3. **Wallet Trust Controls**
+   - Wallet connect + ownership verification for updates.
+4. **Core Purchase Orchestration**
+   - Order creation, fee/quote visibility, payment-state orchestration.
+5. **Mint Integrity**
+   - Mint only after validated payment and policy checks.
+6. **Redemption Core**
+   - Request, eligibility checks, lock/burn lifecycle, fulfillment handoff.
+7. **Admin Policy Controls**
+   - Country risk lists, thresholds, fee configs, distributor lifecycle.
+8. **Audit Trail Foundation**
+   - Audit records, signed submissions, and evidence referencing.
 
-## Later Phase (P1)
-1. Automated consistency checks across artifacts.
-2. Task-package generation wizard from approved Foundation Pack.
-3. Integration with version control PR templates and evidence auto-fill.
-4. Review queues and approval SLAs.
+## P1 — Near-Term Priorities
+1. Reconciliation automation and drift alerting enhancement.
+2. Expanded operational dashboards and SLA monitoring.
+3. Improved exception handling tooling for compliance/ops.
+4. Additional provider redundancy and retry strategies.
 
-## Future (P2)
-1. Multi-workspace and external collaborator support.
-2. AI-assisted impact analysis across artifacts.
-3. Portfolio dashboards and roadmap forecasting.
+## P2 — Later Priorities
+1. Multi-vault intelligent routing.
+2. Advanced fraud/risk scoring automation.
+3. Mobile-native applications.
+4. Campaign and growth features.
 
-## Prioritization Criteria
-- Reduces ambiguity before implementation.
-- Improves release confidence and auditability.
-- Decreases rework across product/design/engineering/QA.
+## MVP vs Later-Phase Separation
+- MVP is strictly focused on compliant onboarding, buying, minting, auditing, and redemption integrity.
+- Later-phase focuses on optimization, automation, and scale enhancements.
 
 ## Ambiguities Identified
-- Unknown timeline constraints for MVP.
-- Unknown team size/concurrency requirements.
-- Unknown governance model for approvals.
+- Exact commercial launch timeline for MVP.
+- Whether cash purchase is full-MVP for all geographies or pilot-only.
+- Compliance burden differences across jurisdictions not yet finalized.

@@ -1,45 +1,70 @@
-# Test Strategy
+# GolDefi Test Strategy
 
 ## Objectives
-- Validate that Foundation Pack artifacts are complete, consistent, and implementation-ready.
-- Ensure each MVP feature in the acceptance matrix has deterministic verification.
+- Verify that MVP acceptance criteria are fully covered and repeatable.
+- Protect high-risk flows (auth, payment, mint/burn, redemption, policy controls).
+- Ensure traceability from requirements -> acceptance criteria -> test evidence.
+
+## Test Scope
+### In Scope (MVP)
+- Auth/identity, KYC gates, wallet verification.
+- Order/payment/mint lifecycle.
+- Cash distributor OTP-protected workflow.
+- Redemption lifecycle and state transitions.
+- Audit submission and evidence metadata lifecycle.
+- Admin config and RBAC enforcement.
+
+### Later Phase
+- Multi-vault routing behavior.
+- Advanced risk-scoring pipeline.
 
 ## Test Levels
-1. **Static Document Validation (MVP)**
-   - Required sections present.
-   - MVP/later-phase separation present.
-   - Open questions captured.
-2. **Contract Validation (MVP)**
-   - OpenAPI syntax linting.
-   - Schema example conformance.
-3. **Workflow Validation (MVP)**
-   - Readiness gate blocks incomplete packs.
-   - Approval flow transitions are valid.
-4. **Regression Validation (Later)**
-   - Integration compatibility checks.
-   - Automation rule drift detection.
+1. **Unit Tests**
+   - Quote calculation, policy checks, state transition guards, idempotency handlers.
+2. **Integration Tests**
+   - KYC provider callbacks, payment webhooks, blockchain write orchestration, notification dispatch.
+3. **Contract Tests**
+   - OpenAPI request/response schema conformance; backward-compatibility checks.
+4. **End-to-End Tests**
+   - Full user journeys across portals and payment methods.
+5. **Security Tests**
+   - RBAC, OTP misuse prevention, signature validation, replay protections.
+6. **Operational Tests**
+   - Alerting, logging completeness, failure recovery drills.
 
-## Acceptance Matrix Alignment
-| Acceptance Matrix Feature | Test Method | Type |
+## Acceptance Matrix Traceability
+| Acceptance ID | Primary Test Suite | Environment |
 |---|---|---|
-| Foundation artifact creation | Template completeness check | Static |
-| Artifact consistency check | Cross-doc review checklist | Manual + static |
-| Open questions tracking | Presence/owner/status validation | Static |
-| MVP vs later separation | Scope tagging and review | Manual |
-| API contract quality | OpenAPI lint + schema checks | Automated |
-| Acceptance-to-test alignment | Traceability table check | Manual |
-| Readiness gate | Gate simulation scenarios | Automated/manual |
+| AC-01, AC-02, AC-03 | Auth + KYC + Wallet E2E | Staging |
+| AC-04, AC-05 | Order/Payment/Tokenization Integration | Staging + pre-prod |
+| AC-06 | Distributor Flow Security E2E | Staging |
+| AC-07 | Redemption E2E + contract state checks | Staging + pre-prod |
+| AC-08 | Audit Workflow API + UI tests | Staging |
+| AC-09 | Admin RBAC + Config API tests | Staging |
+| AC-10 | Notification integration tests | Staging |
+| AC-11 | Observability smoke + chaos drills (bounded) | Pre-prod |
 
-## Environments
-- MVP: local + CI validation runner.
-- Later phase: staging and integration sandbox.
+## Test Data Strategy
+- Use synthetic user identities and masked test profiles.
+- Maintain deterministic payment fixtures for each method.
+- Use controlled blockchain test environment with replayable state.
 
-## Exit Criteria (MVP)
-- All MVP acceptance criteria marked pass.
-- No unresolved blocking open questions.
-- API contract passes linting.
-- Reviewer approval recorded for all required artifacts.
+## Entry Criteria
+- Foundation Pack artifacts approved for MVP scope.
+- API contracts versioned and available.
+- Test environments configured with mock/stub providers where needed.
+
+## Exit Criteria
+- All MVP acceptance criteria passing.
+- Zero unresolved Sev-1 and Sev-2 defects.
+- No critical reconciliation drift in test runs.
+- Required evidence captured in PR summary.
+
+## Risks and Mitigation
+- **Provider instability:** use stubs, retries, and replay tests.
+- **Chain latency variance:** use timeout envelopes and delayed confirmation scenarios.
+- **Compliance edge cases:** include policy-matrix test combinations.
 
 ## Ambiguities Identified
-- CI toolchain and lint tooling are not yet selected.
-- Required pass/fail thresholds for manual review scoring are not defined.
+- Final CI stack and tooling ownership.
+- Frequency and ownership for regression suites.

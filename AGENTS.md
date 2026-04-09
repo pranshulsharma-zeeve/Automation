@@ -1,16 +1,16 @@
 # AGENTS.md
 
-This document defines the mandatory operating model for Codex agents working in this repository.
+This file defines the mandatory operating model for Codex agents working in this repository.
 
 ## Mission
-Deliver production-ready product increments through a documentation-first workflow, with explicit traceability from requirements to implementation and verification.
+Deliver production-ready increments through a **documentation-first workflow** with explicit traceability from requirement framing to implementation and verification.
 
 ---
 
 ## Required Operating Model (Non-Negotiable)
 
 1. **Never generate implementation issues directly from the raw SRS.**
-2. **Before backlog generation, first create and refine these artifacts (in order, iterating as needed):**
+2. **Before backlog generation, first generate and refine these artifacts (in this order, iterating as needed):**
    1. Product brief (`/docs/product/brief.md`)
    2. Priorities (`/docs/product/priorities.md`)
    3. Scope (`/docs/product/scope.md`)
@@ -23,104 +23,115 @@ Deliver production-ready product increments through a documentation-first workfl
    10. API contracts (`/docs/api/openapi.yaml`)
    11. Acceptance matrix (`/docs/qa/acceptance-matrix.md`)
    12. Test strategy (`/docs/qa/test-strategy.md`)
-3. **Only after the above artifacts are complete and internally consistent may backlog items be generated.**
+3. **Only after the artifacts above are complete and internally consistent may backlog items be generated.**
 4. **Every implementation task must be grounded in a task package under `/docs/planning/task-packages`.**
-5. **Every PR must include an evidence summary with:**
+5. **Every PR must include an evidence summary containing:**
    - Requirements covered
    - Tests run
    - Files changed and why
    - Unresolved items
    - Risk level
    - Confidence
-6. **Prefer targeted clarification questions over assumptions when product detail is missing.**
+6. **Prefer targeted clarification questions instead of assumptions when product detail is missing.**
 7. **Always update `/.ai/sessions/<task-id>/status.md` during active work.**
-8. **Always restate the task and the execution plan before coding.**
+8. **Always restate the task and execution plan before coding.**
 9. **Always run project validation commands before marking work complete.**
 10. **Never auto-merge high-risk work (auth, billing, permissions, migrations, security-sensitive changes).**
 
 ---
 
 ## Repo Navigation
-- Product requirements and framing: `/docs/product`
-- System structure and decisions: `/docs/architecture`
-- UX and operational behavior: `/docs/flows`
-- UI and design language: `/docs/design`
-- API contracts: `/docs/api/openapi.yaml`
-- Quality definitions: `/docs/qa`
-- Planning artifacts and task packages: `/docs/planning`
-- Session logs and active task tracking: `/.ai/sessions`
 
-When starting work, identify which of the above areas are impacted and update docs first when required by the operating model.
+- Product requirements and planning context: `/docs/product`
+- Architecture and technical decisions: `/docs/architecture`
+- UX and operational flows: `/docs/flows`
+- Design artifacts (wireframes, branding, system): `/docs/design`
+- API contract source of truth: `/docs/api/openapi.yaml`
+- QA acceptance and strategy: `/docs/qa`
+- Planning and task packages: `/docs/planning`
+- Active session traces: `/.ai/sessions`
+
+**Start-of-task expectation:** identify impacted areas and update documentation first when required by the operating model.
 
 ---
 
 ## Branching Rules
-- Use short-lived feature branches.
-- One branch should focus on one task package or tightly related set of changes.
-- Keep commits logically grouped and message each commit clearly.
-- Rebase or merge mainline frequently to reduce drift.
-- Do not merge if evidence summary or validation output is incomplete.
+
+- Use short-lived branches focused on a single task package or tightly related scope.
+- Keep commits logically grouped and messages explicit.
+- Rebase/merge from mainline frequently to reduce drift.
+- Do not mark work complete if evidence summary or validation output is incomplete.
 
 ---
 
 ## Coding Standards
-- Match existing project conventions and naming.
-- Prefer small, reviewable changes with clear intent.
-- Avoid unrelated refactors in implementation PRs.
-- Preserve backwards compatibility unless scope explicitly allows breaking changes.
-- Add or update tests proportionate to risk and impact.
-- For ambiguous requirements, pause and ask focused clarification questions.
+
+- Follow existing naming and style conventions.
+- Prefer small, reviewable diffs with clear intent.
+- Avoid unrelated refactors.
+- Preserve backward compatibility unless scope explicitly permits breaking changes.
+- Add/update tests proportional to risk and blast radius.
+- Ask focused clarification questions when requirements are ambiguous.
 
 ---
 
 ## Validation Steps
-Before marking any task complete, run validation commands appropriate to the tech stack (for example: lint, type-check, unit tests, integration tests, contract checks, build).
 
-Minimum requirements:
+Run validations appropriate to the stack before completion (e.g., lint, type-check, unit, integration, contract, build).
+
+Minimum validation requirements:
 1. Run all repository-standard validation commands.
-2. Capture command outputs for PR evidence summary.
-3. If a validation command cannot run, document why, impact, and mitigation.
+2. Capture command outputs for PR evidence.
+3. If a command cannot run, document:
+   - why,
+   - impact,
+   - mitigation or follow-up action.
 
 ---
 
 ## Documentation Rules
-- Docs are the source of truth for planning and scope alignment.
-- Keep `/docs/product`, `/docs/architecture`, `/docs/flows`, `/docs/design`, `/docs/api`, and `/docs/qa` internally consistent before generating backlog items.
+
+- Documentation is the planning source of truth.
+- Keep `/docs/product`, `/docs/architecture`, `/docs/flows`, `/docs/design`, `/docs/api`, and `/docs/qa` internally consistent before backlog generation.
 - Every implementation change must trace to:
-  1. An approved artifact set,
-  2. A task package in `/docs/planning/task-packages`, and
-  3. Acceptance and test criteria.
-- Update docs in the same PR when implementation alters behavior, interfaces, or constraints.
+  1. approved upstream artifacts,
+  2. a task package in `/docs/planning/task-packages`, and
+  3. acceptance + test criteria.
+- If behavior/interfaces/constraints change, update docs in the same PR.
 
 ---
 
 ## Session Logging Rules
+
 For every active task:
 1. Create/update `/.ai/sessions/<task-id>/status.md`.
-2. Log: objective, current plan, progress, blockers, validations run, and next steps.
-3. Update status at meaningful checkpoints (start, major change, validation, handoff).
-4. Ensure session log matches final PR evidence summary.
+2. Log objective, current plan, progress, blockers, validations run, and next steps.
+3. Update at meaningful checkpoints: start, major edits, validation, handoff.
+4. Keep session status consistent with final PR evidence summary.
 
 ---
 
 ## Risk Classification Rules
-Classify each task and PR as:
-- **Low:** isolated, reversible, minimal user impact.
-- **Medium:** multi-file or behavior-affecting changes with bounded blast radius.
-- **High:** auth, billing, permissions, migrations, security-sensitive logic, data integrity, or irreversible changes.
 
-Rules:
-- High-risk work requires stricter review, explicit rollback notes, and no auto-merge.
+Classify each task/PR as:
+- **Low:** isolated, reversible, minimal user impact.
+- **Medium:** multi-file or behavior-impacting change with bounded blast radius.
+- **High:** auth, billing, permissions, migrations, security-sensitive logic, data integrity, or irreversible change.
+
+Risk handling rules:
 - Increase test depth with risk level.
 - Explicitly document unresolved risks.
+- High-risk work requires rollback notes and explicit reviewer sign-off.
+- High-risk work is never auto-merged.
 
 ---
 
 ## Merge Gate Rules
-A PR is merge-ready only when all conditions are met:
-1. Task is grounded in `/docs/planning/task-packages/<task-id>.md` (or equivalent package file).
+
+A PR is merge-ready only when all criteria are met:
+1. Task is grounded in `/docs/planning/task-packages/<task-id>.md` (or equivalent).
 2. Required upstream artifacts are complete and consistent.
-3. Validation commands have been run and results captured.
+3. Validation commands were run and outputs captured.
 4. Evidence summary includes:
    - Requirements covered
    - Tests run
@@ -128,6 +139,41 @@ A PR is merge-ready only when all conditions are met:
    - Unresolved items
    - Risk level
    - Confidence
-5. For high-risk changes, auto-merge is disabled and reviewer sign-off is explicit.
+5. If risk is high, auto-merge is disabled and reviewer sign-off is explicit.
 
 If any gate fails, do not mark work complete.
+
+---
+
+## PR Evidence Template (Required)
+
+Use this structure in every PR description:
+
+1. **Requirements covered**
+2. **Tests run** (commands + outcomes)
+3. **Files changed and why**
+4. **Unresolved items**
+5. **Risk level** (Low/Medium/High + rationale)
+6. **Confidence** (Low/Medium/High + rationale)
+
+---
+
+## Backlog Generation Gate (Checklist)
+
+Backlog/implementation issue generation is allowed **only if all are true**:
+
+- [ ] Product brief complete
+- [ ] Priorities complete
+- [ ] Scope complete
+- [ ] Architecture complete
+- [ ] User flows complete
+- [ ] Process flows complete
+- [ ] Wireframes complete
+- [ ] Branding complete
+- [ ] Design system complete
+- [ ] API contracts complete
+- [ ] Acceptance matrix complete
+- [ ] Test strategy complete
+- [ ] Artifact set internally consistent
+
+If any item is unchecked, continue artifact refinement and do not generate implementation issues.
